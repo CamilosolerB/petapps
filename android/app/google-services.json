@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "562461045714",
+    "project_id": "adoppet-98cf3",
+    "storage_bucket": "adoppet-98cf3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562461045714:android:8139b9ce0b8874ec838e0b",
+        "android_client_info": {
+          "package_name": "com.example.adopt_me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562461045714-sngojlhjrnml0on1ne3vk3agijtvqi85.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2aUJ_3E4C5TtUKXm1fF-3b5R1RQ74GgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562461045714-sngojlhjrnml0on1ne3vk3agijtvqi85.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
