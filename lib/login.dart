@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:adopt_me/autentication.dart';
-import 'package:adopt_me/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+//import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Login extends StatefulWidget {
@@ -20,11 +19,24 @@ class _LoginState extends State<Login> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
-  Future<void> singInWithEmailAndPassword() async{
+  Future<void> checkEmailAndPassword() async{
     try {
-      await Authentication().singInWithEmailAndPassword(
+      await Authentication().checkEmailAndPassword(
           email: _controllerEmail.text,
-          password: _controllerPassword.text);
+          password: _controllerPassword.text,
+          context: context
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error al iniciar sesion, verifica que tu contraseña sea correcta")));
+      });
+    }
+  }
+
+  Future<void> singUpAndSingInWithGoogle() async {
+    try{
+      await Authentication().singUpAndSingInWithGoogle(context);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -32,17 +44,11 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Authentication().createUserWithEmailAndPassword(
-          email: _controllerEmail.text,
-          password: _controllerPassword.text);
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
+  Future<void> singInWithFacebook() async{
+    await Authentication().singInWithFacebook(context);
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -138,8 +144,8 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                           ElevatedButton(onPressed: (){
-                            isLogin ? singInWithEmailAndPassword : createUserWithEmailAndPassword();
-                          }, child: Text(isLogin ? 'Iniciar sesion' : 'Registrate')),
+                            checkEmailAndPassword();
+                          }, child: const Text('Iniciar sesion')),
                           InkWell(
                             child: const Text("¿Haz olvidado tu contraseña?", style: TextStyle( color: Colors.white),),
                             onTap: (){},
@@ -157,27 +163,13 @@ class _LoginState extends State<Login> {
                         icon: Image.asset('img/logoGoogle.png'),
                         iconSize: height,
                         onPressed: (){
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context){
-                                return const AlertDialog(
-                                  title: Text("Titulo"),
-                                  content: Text("Ingresando con google"),
-                                );
-                              });
+                          singUpAndSingInWithGoogle();
                         } ,
                       ),
                       IconButton(
                         icon: Image.asset('img/logoFacebook.png'),
                         onPressed: (){
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context){
-                                return const AlertDialog(
-                                  title: Text("Titulo"),
-                                  content: Text("Ingresando con facebook"),
-                                );
-                              });
+                          singInWithFacebook();
                         } ,
                       )
                     ],

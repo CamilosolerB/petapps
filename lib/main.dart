@@ -1,13 +1,19 @@
-
+import 'package:adopt_me/firebase_options.dart';
 import 'package:adopt_me/login.dart';
 import 'package:adopt_me/widget_tree.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyCNELR-OaqHS4YPp6EEZZBbLhma2JSf7JE",
+        appId: "1:562461045714:web:26c4e8846cff8d34838e0b",
+        messagingSenderId:  "562461045714",
+        projectId: "adoppet-98cf3"
+    )
+  );
   runApp( const MyApp() );
 }
 
