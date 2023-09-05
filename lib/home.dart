@@ -22,7 +22,7 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  int currentPageIndex = 1;
+  int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

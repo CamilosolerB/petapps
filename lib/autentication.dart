@@ -10,36 +10,34 @@ import 'package:adopt_me/querys.dart';
 
 class Authentication{
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
+  static String correo = "";
   User? get currentUser => _firebaseAuth.currentUser;
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
   Future<void>singOut() async{
     await _firebaseAuth.signOut();
   }
-
   Future<void> checkEmailAndPassword({
     required String email,
     required String password,
     required BuildContext context
 }) async{
     bool emailExist = await Petition().checkIfEmailExist(email);
-    List<String> singInCheck = await _firebaseAuth.fetchSignInMethodsForEmail(email);
+    correo = email;
     if(emailExist) {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email,
           password: password
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Bienvenido a PetApp")));
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Homepage()));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
     } else {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
           password: password);
+      correo = email;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NewUser()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
     }
     }
 
@@ -57,12 +55,13 @@ class Authentication{
       if( result != null){
         if(user !=null && user.email != null){
           bool emailExist = await Petition().checkIfEmailExist(user.email!);
+          correo = user.email!;
           if(emailExist) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
           } else {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NewUser()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
           }
         }
         // ignore: use_build_context_synchronously

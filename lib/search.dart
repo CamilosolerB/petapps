@@ -1,3 +1,4 @@
+import 'package:adopt_me/formPets.dart';
 import 'package:flutter/material.dart';
 
 class Search extends StatefulWidget {
@@ -16,7 +17,9 @@ class _SearchState extends State<Search> {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: (){},
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => FormPets()));
+            },
             child: Text("Dar en Adopcion"),
           ),
           Container(

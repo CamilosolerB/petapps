@@ -8,12 +8,14 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: const FirebaseOptions(
         apiKey: "AIzaSyCNELR-OaqHS4YPp6EEZZBbLhma2JSf7JE",
         appId: "1:562461045714:web:26c4e8846cff8d34838e0b",
         messagingSenderId:  "562461045714",
-        projectId: "adoppet-98cf3"
+        projectId: "adoppet-98cf3",
+        storageBucket: "adoppet-98cf3.appspot.com"
     )
   );
     if (kIsWeb) {

@@ -29,7 +29,7 @@ class _LoginState extends State<Login> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error al iniciar sesion, verifica que tu contraseña sea correcta")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage!)));
       });
     }
   }
