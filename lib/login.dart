@@ -106,6 +106,7 @@ class _LoginState extends State<Login> {
                                 borderRadius: const BorderRadius.all(Radius.circular(100))
                             ),
                             child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
                               controller: _controllerEmail,
                               decoration: const InputDecoration(
                                   border: InputBorder.none,

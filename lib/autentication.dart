@@ -2,7 +2,6 @@ import 'package:adopt_me/home.dart';
 import 'package:adopt_me/newUser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:adopt_me/querys.dart';
@@ -29,14 +28,18 @@ class Authentication{
           email: email,
           password: password
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
     } else {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
           password: password);
       correo = email;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
+      // ignore: use_build_context_synchronously
       Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
     }
     }
@@ -52,22 +55,20 @@ class Authentication{
       );
       UserCredential result = await _firebaseAuth.signInWithCredential(authCredential);
       User? user = result.user;
-      if( result != null){
-        if(user !=null && user.email != null){
-          bool emailExist = await Petition().checkIfEmailExist(user.email!);
-          correo = user.email!;
-          if(emailExist) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
-          }
+      if(user !=null && user.email != null){
+        bool emailExist = await Petition().checkIfEmailExist(user.email!);
+        correo = user.email!;
+        if(emailExist) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
         }
-        // ignore: use_build_context_synchronously
-
       }
-    }
+      // ignore: use_build_context_synchronously
+
+        }
   }
 
   Future<UserCredential?> singInWithFacebook(BuildContext  context) async {
@@ -75,7 +76,7 @@ class Authentication{
     final LoginResult result = await FacebookAuth.instance.login();
     if (result.status == LoginStatus.success){
       final OAuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Bienvenido a PetApp")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
       return await FirebaseAuth.instance.signInWithCredential(credential);
     }

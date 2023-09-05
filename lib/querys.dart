@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:adopt_me/pets.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adopt_me/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,5 +33,23 @@ class Petition{
   Future<void> loadPhoto(File? file, String filename) async {
     final ref = await FirebaseStorage.instance.ref().child('uploads/$filename');
     ref.putFile(file!);
+  }
+
+  Future<void> addPet(Pets pet){
+    bool check = false;
+    return firestore
+    .collection('Pets')
+    .add({
+      'name' : pet.nombre,
+      'age' : pet.edad,
+      'raza' : pet.raza,
+      'address' : pet.address,
+      'phone' : pet.phone,
+      'department' : pet.departament,
+      'city' : pet.city,
+      'url' : pet.url
+    })
+    .then((value) => print("exitoso"))
+    .catchError((error)=> print("Error: " + error));
   }
 }
