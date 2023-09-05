@@ -1,7 +1,6 @@
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/querys.dart';
 import 'package:adopt_me/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:adopt_me/home.dart';
 

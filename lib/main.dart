@@ -1,4 +1,4 @@
-import 'package:adopt_me/firebase_options.dart';
+//import 'package:adopt_me/firebase_options.dart';
 import 'package:adopt_me/login.dart';
 import 'package:adopt_me/widget_tree.dart';
 import 'package:flutter/material.dart';

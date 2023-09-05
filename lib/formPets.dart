@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:adopt_me/querys.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';

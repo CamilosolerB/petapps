@@ -1,5 +1,6 @@
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/login.dart';
+import 'package:adopt_me/pqrs.dart';
 import 'package:flutter/material.dart';
 
 class Hamburguer extends StatefulWidget {
@@ -81,11 +82,21 @@ class _HamburguerState extends State<Hamburguer> {
               },
             ),
             ListTile(
-              title: const Text('Cerrar sesion'),
-              selected: _selectedIndex == 2,
+              title: const Text('Servicios'),
+              selected: _selectedIndex == 3,
               onTap: () {
                 // Update the state of the app
-                _onItemTapped(2);
+                _onItemTapped(3);
+                // Then close the drawer
+                Navigator.push(context, MaterialPageRoute(builder:(context)=> Pqrs()));
+              },
+            ),
+            ListTile(
+              title: const Text('Cerrar sesion'),
+              selected: _selectedIndex == 4,
+              onTap: () {
+                // Update the state of the app
+                _onItemTapped(4);
                 // Then close the drawer
                 singOut();
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:adopt_me/autentication.dart';
+import 'package:adopt_me/forgot.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -90,7 +91,7 @@ class _LoginState extends State<Login> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(top: 15.0),
-                  height: height * 0.25,
+                  height: height * 0.28,
                   width: width * 0.7,
                   child: Form(
                       child: Column(
@@ -148,13 +149,16 @@ class _LoginState extends State<Login> {
                           }, child: const Text('Iniciar sesion')),
                           InkWell(
                             child: const Text("¿Haz olvidado tu contraseña?", style: TextStyle( color: Colors.white),),
-                            onTap: (){},
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const Forgot()));
+                            },
                           )
                         ],
                       )
                   ),
                 ),
                 SizedBox(
+
                   height: height * 0.09,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
