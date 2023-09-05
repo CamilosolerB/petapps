@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:adopt_me/querys.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Authentication{
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -81,5 +81,11 @@ class Authentication{
       return await FirebaseAuth.instance.signInWithCredential(credential);
     }
     return null;
+  }
+  Future<void> forgotPassword(String email,BuildContext context) async{
+    await _firebaseAuth
+      .sendPasswordResetEmail(email: email)
+      .then((value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Verifica tu correo para la recuperacion de la clave"))))
+      .catchError((error)=> print(error) );
   }
 }

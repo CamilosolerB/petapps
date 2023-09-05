@@ -44,6 +44,7 @@ dependencies:
   file_picker: ^5.5.0
   firebase_storage: ^11.2.6
   http:
+  shared_preferences:
   fluttertoast: ^8.2.2
 
 dev_dependencies:
