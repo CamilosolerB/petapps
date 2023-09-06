@@ -24,8 +24,24 @@ class _SearchState extends State<Search> {
           ),
           Container(
             height: height *0.73,
+            width: width *0.9,
             child: CustomScrollView(
-              slivers: [],
+              slivers: [
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return Container(
+                  alignment: Alignment.center,
+                  color: Colors.indigo,
+                  height: height * 0.2,
+                  width: width *0.8,
+                  child: Text('Item: $index'),
+                );
+              },
+              childCount: 5,
+            ),
+          ),
+              ],
             ),
           ),
         ],

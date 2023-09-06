@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/pets.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adopt_me/user.dart';
@@ -33,6 +34,21 @@ class Petition{
   Future<void> loadPhoto(File? file, String filename) async {
     final ref = await FirebaseStorage.instance.ref().child('uploads/$filename');
     ref.putFile(file!);
+  }
+  Future<String?> checkName() async {
+    try{
+      CollectionReference user = firestore.collection('User');
+      QuerySnapshot querySnapshot = await user.where('email', isEqualTo: Authentication.correo).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var nombre = querySnapshot.docs.first['name'];
+        return nombre.toString();
+      } else {
+        return null;
+      }
+    }catch(e){
+      print("Error al consultar Firestore: $e");
+      return null;
+    }
   }
 
   Future<void> addPet(Pets pet){
