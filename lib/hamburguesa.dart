@@ -82,7 +82,7 @@ class _HamburguerState extends State<Hamburguer> {
               },
             ),
             ListTile(
-              title: const Text('Servicios'),
+              title: const Text('Solicitudes'),
               selected: _selectedIndex == 3,
               onTap: () {
                 // Update the state of the app
