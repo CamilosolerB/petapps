@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/forgot.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Login extends StatefulWidget {

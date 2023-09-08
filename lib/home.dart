@@ -42,9 +42,9 @@ class _HomepageState extends State<Homepage> {
                 label: 'Home'
             ),
             NavigationDestination(
-                selectedIcon: Icon(Icons.shopping_cart),
-                icon: Icon(Icons.shopping_cart_outlined),
-                label: 'Servicios'
+                selectedIcon: Icon(Icons.pets),
+                icon: Icon(Icons.pets),
+                label: 'Mis mascotas'
             ),
             NavigationDestination(
                 selectedIcon: Icon(Icons.settings_accessibility),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/pets.dart';
 import 'package:adopt_me/querys.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,9 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
 class FormPets extends StatefulWidget {
-  const FormPets({Key? key});
+  final title;
+  final collection;
+  const FormPets({required this.title, required this.collection});
 
   @override
   State<FormPets> createState() => _FormPetsState();
@@ -43,8 +46,9 @@ class _FormPetsState extends State<FormPets> {
     final departament = departamentController;
     final city = cityController;
     final url = urlController;
-    final pet = Pets(nombre: name, edad: age, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url);
-    Petition().addPet(pet);
+    final email = Authentication.correo;
+    final pet = Pets(nombre: name, edad: age, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email, id: '');
+    Petition().addPet(pet,widget.collection);
     succestoast();
   }
 
@@ -58,7 +62,7 @@ class _FormPetsState extends State<FormPets> {
       String fileName = fileResult.files.first.name;
       File? file = File(pickedFile.path!);
       Petition().loadPhoto(file, fileName);
-      urlController = 'uploads/$fileName';
+      urlController = 'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
     }
   }
   //declare the variables
@@ -86,7 +90,7 @@ class _FormPetsState extends State<FormPets> {
       appBar: AppBar(
         backgroundColor: Colors.indigo,
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text("Registro de adopción de mascota"),
+        title: Text(widget.title),
         titleTextStyle: TextStyle(
           color: Colors.white,
         ),

@@ -1,33 +1,20 @@
-import 'package:adopt_me/formPets.dart';
 import 'package:adopt_me/pets.dart';
-import 'package:adopt_me/profilePet.dart';
 import 'package:adopt_me/querys.dart';
 import 'package:adopt_me/slivers.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Search extends StatefulWidget {
-  const Search({super.key});
+class Missing extends StatefulWidget {
+  const Missing({super.key});
 
   @override
-  State<Search> createState() => _SearchState();
+  State<Missing> createState() => _MissingState();
 }
 
-class _SearchState extends State<Search> {
-  final storage = FirebaseStorage.instance;
+class _MissingState extends State<Missing> {
   List<Pets> listaMascotas = [];
-
-  @override
-  void initState() {
-    super.initState();
-    // Obtener la lista de mascotas una vez en initState.
-    getPets();
-  }
-
   Future<void> getPets() async {
     try {
-      final mascotas = await Petition().getPets('Pets');
+      final mascotas = await Petition().getPets('Disapear');
       setState(() {
         listaMascotas = mascotas;
       });
@@ -36,7 +23,6 @@ class _SearchState extends State<Search> {
       // Manejar el error de manera adecuada, por ejemplo, mostrando un mensaje al usuario.
     }
   }
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -45,10 +31,11 @@ class _SearchState extends State<Search> {
     return Center(
       child: Column(
         children: [
+          Text("Por favor ayudanos a encontrarlos"),
           listaMascotas.isEmpty
               ? Text('No hay datos disponibles.')
               : Container(
-                  height: height * 0.73,
+                  height: height * 0.9,
                   width: width * 0.9,
                   child: SliverPets(pets: listaMascotas),
                 ),

@@ -7,6 +7,8 @@ class Pets {
   String departament;
   String city;
   String url;
+  String email;
+  String id;
 
   Pets({
       required this.nombre,
@@ -17,5 +19,8 @@ class Pets {
       required this.departament,
       required this.city,
       required this.url,
+      required this.email,
+      required this.id
   });
+  
 }

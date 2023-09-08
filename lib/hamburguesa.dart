@@ -1,5 +1,6 @@
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/login.dart';
+import 'package:adopt_me/missing.dart';
 import 'package:adopt_me/pqrs.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +50,7 @@ class _HamburguerState extends State<Hamburguer> {
               decoration: BoxDecoration(
                 color: Colors.indigo,
               ),
-              child: Text('<<Name>>'),
+              child: Text(''),
             ),
             ListTile(
               title: const Text('Inicio'),
@@ -62,17 +63,17 @@ class _HamburguerState extends State<Hamburguer> {
               },
             ),
             ListTile(
-              title: const Text('Encuentra tu mascota'),
+              title: const Text('Mascotas perdidas'),
               selected: _selectedIndex == 1,
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(1);
                 // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Missing()));
               },
             ),
             ListTile(
-              title: const Text('Servicios'),
+              title: const Text('Chats'),
               selected: _selectedIndex == 2,
               onTap: () {
                 // Update the state of the app
