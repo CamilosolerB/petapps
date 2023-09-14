@@ -1,23 +1,19 @@
 //import 'package:adopt_me/firebase_options.dart';
+import 'package:adopt_me/analitycs_services.dart';
+import 'package:adopt_me/events.dart';
 import 'package:adopt_me/login.dart';
 import 'package:adopt_me/widget_tree.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb; 
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; 
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:provider/provider.dart'; 
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-        apiKey: "AIzaSyCNELR-OaqHS4YPp6EEZZBbLhma2JSf7JE",
-        appId: "1:562461045714:web:26c4e8846cff8d34838e0b",
-        messagingSenderId:  "562461045714",
-        projectId: "adoppet-98cf3",
-        storageBucket: "adoppet-98cf3.appspot.com"
-    )
-  );
+  await Firebase.initializeApp();
     if (kIsWeb) {
     await FacebookAuth.i.webAndDesktopInitialize(
         appId: "152275387919681",
@@ -26,16 +22,22 @@ Future<void> main() async{
         version: "v15.0",
     );
   }
-  runApp( const MyApp() );
+  runApp( ChangeNotifierProvider(
+    create: (context) => EventsFirebase(),
+    child: MyApp(),
+  ) 
+  );
 }
 //
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [AnalyticsServices().getAnalyticsObserver()],
       title: 'Adopt Me',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -59,4 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return const Login();
   }
+  /*FirebaseOptions(
+        apiKey: "AIzaSyCNELR-OaqHS4YPp6EEZZBbLhma2JSf7JE",
+        appId: "1:562461045714:web:26c4e8846cff8d34838e0b",
+        messagingSenderId:  "562461045714",
+        projectId: "adoppet-98cf3",
+        storageBucket: "adoppet-98cf3.appspot.com"
+    )*/
 }

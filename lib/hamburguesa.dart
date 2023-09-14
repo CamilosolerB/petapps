@@ -1,4 +1,5 @@
 import 'package:adopt_me/autentication.dart';
+import 'package:adopt_me/events.dart';
 import 'package:adopt_me/login.dart';
 import 'package:adopt_me/missing.dart';
 import 'package:adopt_me/pqrs.dart';
@@ -68,36 +69,27 @@ class _HamburguerState extends State<Hamburguer> {
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(1);
+                EventsFirebase().seeMissing();
                 // Then close the drawer
                 Navigator.push(context, MaterialPageRoute(builder: (context) => Missing()));
               },
             ),
             ListTile(
-              title: const Text('Chats'),
+              title: const Text('Peticiones, Quejas y reclamos'),
               selected: _selectedIndex == 2,
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(2);
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Solicitudes'),
-              selected: _selectedIndex == 3,
-              onTap: () {
-                // Update the state of the app
-                _onItemTapped(3);
                 // Then close the drawer
                 Navigator.push(context, MaterialPageRoute(builder:(context)=> Pqrs()));
               },
             ),
             ListTile(
               title: const Text('Cerrar sesion'),
-              selected: _selectedIndex == 4,
+              selected: _selectedIndex == 3,
               onTap: () {
                 // Update the state of the app
-                _onItemTapped(4);
+                _onItemTapped(3);
                 // Then close the drawer
                 singOut();
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));

@@ -58,6 +58,7 @@ class _PqrsState extends State<Pqrs> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
           title: Text("Peticiones, quejas, reclamos")
         ),
         body: Center(

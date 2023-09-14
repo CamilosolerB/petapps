@@ -14,7 +14,7 @@ class _MissingState extends State<Missing> {
   List<Pets> listaMascotas = [];
   Future<void> getPets() async {
     try {
-      final mascotas = await Petition().getPets('Disapear');
+      final mascotas = await Petition().getPets("Disapear");
       setState(() {
         listaMascotas = mascotas;
       });
@@ -23,12 +23,24 @@ class _MissingState extends State<Missing> {
       // Manejar el error de manera adecuada, por ejemplo, mostrando un mensaje al usuario.
     }
   }
+    @override
+  void initState() {
+    super.initState();
+    // Obtener la lista de mascotas una vez en initState.
+    getPets();
+  }
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Mascotas perdidas"),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.indigo,
+      ),
+      body: Center(
       child: Column(
         children: [
           Text("Por favor ayudanos a encontrarlos"),
@@ -41,6 +53,7 @@ class _MissingState extends State<Missing> {
                 ),
         ],
       ),
+    )
     );
   }
 }

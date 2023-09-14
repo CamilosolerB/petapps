@@ -46,11 +46,6 @@ class _HomepageState extends State<Homepage> {
                 icon: Icon(Icons.pets),
                 label: 'Mis mascotas'
             ),
-            NavigationDestination(
-                selectedIcon: Icon(Icons.settings_accessibility),
-                icon: Icon(Icons.settings_accessibility),
-                label: 'Ajustes'
-            )
           ]
       ),
       body: <Widget>[

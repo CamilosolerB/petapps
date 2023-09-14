@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_auth: 
   firebase_core:
+  firebase_analytics:
   google_sign_in: ^6.1.4
   flutter_facebook_auth: ^6.0.1
   cloud_firestore: ^4.9.1
@@ -45,6 +46,8 @@ dependencies:
   firebase_storage: ^11.2.6
   http:
   fluttertoast: ^8.2.2
+  url_launcher:
+  provider:
 
 dev_dependencies:
   flutter_test:

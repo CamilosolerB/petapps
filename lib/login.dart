@@ -4,6 +4,7 @@ import 'package:adopt_me/forgot.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,7 +14,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
+  
   String? errorMessage = "";
   bool isLogin = true;
 

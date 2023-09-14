@@ -23,8 +23,10 @@ class _ServicesState extends State<Services> {
     Future<void> getPets() async {
     try {
       final mascotas = await Petition().getPetsbyEmail('Pets');
+      final perdidas = await Petition().getPetsbyEmail('Disapear');
       setState(() {
         listaMascotas = mascotas;
+        disapear = perdidas;
       });
     } catch (error) {
       print('Error al obtener la lista de mascotas: $error');
@@ -88,7 +90,14 @@ class _ServicesState extends State<Services> {
               );
             },
             child: Text("Reportar mascota"),
-          )
+          ),
+          disapear.isEmpty
+                ? Text('No hay datos disponibles.')
+                : Container(
+                    height: height * 0.2,
+                    width: width * 0.9,
+                    child: SliverPets(pets: disapear),
+                  ),
               ],
             ),
           )

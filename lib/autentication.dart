@@ -1,5 +1,7 @@
+import 'package:adopt_me/analitycs_services.dart';
 import 'package:adopt_me/home.dart';
 import 'package:adopt_me/newUser.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,14 +9,28 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:adopt_me/querys.dart';
 
 class Authentication{
+  //analiticas
+  int _counter = 0; 
+  void counterSingIn() async{
+    _counter++;
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'registro',
+      parameters: <String, dynamic>{
+        'total_registro':_counter
+      }
+    );
+    print("Evento registrado");
+  }
+  //fin analiticas
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static String correo = "";
   User? get currentUser => _firebaseAuth.currentUser;
-
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+  final AnalyticsServices _analyticsServices = AnalyticsServices();
   Future<void>singOut() async{
     await _firebaseAuth.signOut();
   }
+  //verifica correo
   Future<void> checkEmailAndPassword({
     required String email,
     required String password,
@@ -27,6 +43,7 @@ class Authentication{
           email: email,
           password: password
       );
+      counterSingIn();
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
       // ignore: use_build_context_synchronously
@@ -42,7 +59,7 @@ class Authentication{
       Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
     }
     }
-
+  //ingresa o registra por google
   Future<void> singUpAndSingInWithGoogle(BuildContext context) async {
     final GoogleSignIn googleSignIn = GoogleSignIn( clientId: "562461045714-bfru0auqj70siouajna01o718dk061tq.apps.googleusercontent.com" );
     final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
@@ -58,6 +75,7 @@ class Authentication{
         bool emailExist = await Petition().checkIfEmailExist(user.email!);
         correo = user.email!;
         if(emailExist) {
+          counterSingIn();
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
         } else {
@@ -75,6 +93,7 @@ class Authentication{
     final LoginResult result = await FacebookAuth.instance.login();
     if (result.status == LoginStatus.success){
       final OAuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
+      
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
       return await FirebaseAuth.instance.signInWithCredential(credential);
@@ -87,4 +106,5 @@ class Authentication{
       .then((value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Verifica tu correo para la recuperacion de la clave"))))
       .catchError((error)=> print(error) );
   }
+  //analiticas
 }

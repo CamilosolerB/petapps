@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adopt_me/autentication.dart';
-import 'package:adopt_me/chat.dart';
+import 'package:adopt_me/events.dart';
 import 'package:adopt_me/pets.dart';
 import 'package:flutter/material.dart';
 import 'package:adopt_me/querys.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePet extends StatefulWidget {
   final Pets pet;
@@ -36,12 +37,17 @@ class _ProfilePetState extends State<ProfilePet> {
   late TextEditingController addressController;
   late TextEditingController phoneController;
   late TextEditingController idController;
+  late TextEditingController reviewController;
   String departamentController = "";
   String cityController = "";
   String urlController= "";
+  String state = "";
+  Future<void> stateFuture () async{
+    state = await Petition().isState(widget.pet.id);
+  }
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
     nombreController = TextEditingController(text: widget.pet.nombre);
     edadController = TextEditingController(text: widget.pet.edad.toString());
@@ -52,6 +58,8 @@ class _ProfilePetState extends State<ProfilePet> {
     String departamentController = widget.pet.departament;
     String cityController = widget.pet.city;
     String urlController = widget.pet.url;
+    stateFuture();
+    print(state);
     getData();
   }
 
@@ -106,6 +114,36 @@ class _ProfilePetState extends State<ProfilePet> {
     }
   }
 
+    void _launchWhatsApp() async {
+    final phoneNumber = widget.pet.phone;
+    final whatsappUrl = "https://wa.me/$phoneNumber";
+
+    if (await canLaunch(whatsappUrl)) {
+      await launch(whatsappUrl);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("WhatsApp is not installed on your device."),
+        ),
+      );
+    }
+  }
+
+  void _launchPhoneDialer() async {
+    final phoneNumber = widget.pet.phone.toString();
+    final phoneUrl = "tel:$phoneNumber";
+
+    if (await canLaunch(phoneUrl)) {
+      await launch(phoneUrl);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Could not launch the phone dialer."),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,12 +161,12 @@ class _ProfilePetState extends State<ProfilePet> {
               ),
             ),
           ),
-          Expanded(
+          SizedBox(
             child: Column(
               children: [
                 if (!isEditMode)
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
+                    height: MediaQuery.of(context).size.height * 0.35,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(widget.pet.url),
@@ -142,24 +180,24 @@ class _ProfilePetState extends State<ProfilePet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                Container(
-                        child: TextFormField(
-                    controller: nombreController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor, ingrese un nombre.';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Nombre",
-                      labelText: "Nombre *",
-                      icon: Icon(Icons.account_circle_rounded),
-                      iconColor: Colors.black,
-                    ),
-                  ),
-                  width: 250,
-                ),
+                        Container(
+                          child: TextFormField(
+                            controller: nombreController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Por favor, ingrese un nombre.';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Nombre",
+                              labelText: "Nombre *",
+                              icon: Icon(Icons.account_circle_rounded),
+                              iconColor: Colors.black,
+                            ),
+                          ),
+                          width: 250,
+                        ),
                 Container(
                   child: TextFormField(
                     controller: edadController,
@@ -367,11 +405,104 @@ class _ProfilePetState extends State<ProfilePet> {
                           ),
                         ],
                       )
-                    : ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
+                    : Column(
+                        children: [
+                          Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            onPressed: (){
+                              _launchWhatsApp();
+                              Petition().beginAdopt(idController.text);
+                            },
+                            child: Text('Contact via WhatsApp'),
+                          ),
+                          ElevatedButton(
+                            onPressed: (){
+                              _launchPhoneDialer();
+                              Petition().beginAdopt(idController.text);
+                            },
+                            child: Text('Contact via Phone'),
+                          )
+                        ],
+                      ),
+                      if(state.isNotEmpty)
+                        ElevatedButton(
+                        onPressed: () async {
+                          final firstDialogResult = await showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text('¿Finalizar proceso?'),
+                              content: Text('¿Estás seguro de finalizar el proceso de adopción?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'No'),
+                                  child: const Text('No'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'Si'),
+                                  child: const Text('Si'),
+                                ),
+                              ],
+                            ),
+                          );
+
+                          if (firstDialogResult == 'Si') {
+                            if(cityController == "Mosquera"){
+                              EventsFirebase().adoptMosquera();
+                            }
+                            EventsFirebase().percentAdopt();
+                            final secondDialogResult = await showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: Text('Fin proceso'),
+                                content: Text('¿La adopción se realizó?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'Si'),
+                                    child: const Text('Si'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'No'),
+                                    child: const Text('No'),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (secondDialogResult == 'Si' || secondDialogResult == 'No') {
+                              if(secondDialogResult == 'Si'){
+                                Petition().deletePet(idController.text);
+                              }
+                              final reviewController = TextEditingController();
+                              final feedbackResult = await showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: Text('Danos una retroalimentación'),
+                                  content: TextField(
+                                    maxLines: null,
+                                    keyboardType: TextInputType.multiline,
+                                    controller: reviewController,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'Enviar'),
+                                      child: const Text('Enviar'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (feedbackResult == 'Enviar') {
+                                Petition().updateState(state, reviewController.text);
+                              }
+                            }
+                          }
                         },
-                        child: Text('Adoptar'),
+                        child: Text('Finalizar'),
+                        )
+
+                      ],
                       ),
           ),
         ],
@@ -379,146 +510,3 @@ class _ProfilePetState extends State<ProfilePet> {
     );
   }
 }
-
-/*import 'package:adopt_me/autentication.dart';
-import 'package:adopt_me/pets.dart';
-import 'package:flutter/material.dart';
-import 'package:adopt_me/querys.dart';
-
-class ProfilePet extends StatefulWidget {
-  final Pets pet;
-  const ProfilePet({ required this.pet});
-
-  @override
-  State<ProfilePet> createState() => _ProfilePetState();
-}
-
-class _ProfilePetState extends State<ProfilePet> {
-  bool isEditMode = false;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-      children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-        Expanded(child: Container(
-          height: MediaQuery.of(context).size.height * 0.4,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(widget.pet.url),
-              fit: BoxFit.cover,
-            ),
-          ),
-        )),
-        // Parte intermedia: Información
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Nombre: ${widget.pet.nombre}'),
-              Text('Edad: ${widget.pet.edad} años'),
-              Text('Raza: ${widget.pet.raza}'),
-              Text('Dirección: ${widget.pet.address}'),
-              Text('Teléfono: ${widget.pet.phone.toString()}'),
-              Text('Departamento: ${widget.pet.departament}'),
-              Text('Ciudad: ${widget.pet.city}'),
-            ],
-          ),
-        ),
-        // Parte inferior: Botones
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: isEditMode
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          isEditMode = false;
-                        });
-                      },
-                      child: Text('Guardar'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          isEditMode = false;
-                        });
-                      },
-                      child: Text('Cancelar'),
-                    ),
-                  ],
-                )
-              : widget.pet.email == Authentication.correo
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              isEditMode = true;
-                            });
-                          },
-                          child: Text('Modificar'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Lógica para eliminar
-                            // Confirmación
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Eliminar Mascota'),
-                                  content: Text('¿Está seguro de que desea eliminar esta mascota?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Cancelar'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Petition().deletePet(widget.pet.id);
-                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Su mascota ha sido retirada")));
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Eliminar'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: Text('Eliminar'),
-                        ),
-                      ],
-                    )
-                  : ElevatedButton(
-                      onPressed: () {
-                        // Lógica para adoptar la mascota
-                        // Cambiar isEditMode a false
-                        // Actualizar los datos
-                      },
-                      child: Text('Adoptar'),
-                    ),
-        ),
-      ],
-    ),
-    );
-  }
-}*/

@@ -2,13 +2,28 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/pets.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adopt_me/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Petition{
+  static String idProcess = "";
   int count = 0;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //analiticas
+  int _counter = 0;
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance; 
+  void counterSingIn(){
+      _counter++;
+    analytics.setAnalyticsCollectionEnabled(true);
+    analytics.logEvent(
+      name: 'Usuarios registrados e ingresados',
+      parameters: <String, dynamic>{
+        'total contados':_counter
+      }
+    );
+  }
   Future<bool> checkIfEmailExist(String email) async{
     final QuerySnapshot snapshot = await firestore
         .collection('User')
@@ -18,6 +33,7 @@ class Petition{
   }
 
   Future<void> addUser(User user){
+    counterSingIn();
     return firestore
       .collection('User')
       .add({
@@ -26,7 +42,8 @@ class Petition{
         'email' : user.email,
         'phone' : user.phone,
         'bornDate' : user.bornDate,
-        'address' : user.address
+        'address' : user.address,
+        'city' : user.city
       })
       .then((value) => print("añadido"))
       .catchError((error) => print("Error: " + error));
@@ -122,7 +139,7 @@ class Petition{
       'age' : pet.edad,
       'raza' : pet.raza,
       'address' : pet.address,
-      'phone' : pet.phone,
+      'phone' : 570000000000 + pet.phone,
       'department' : pet.departament,
       'city' : pet.city,
       'url' : pet.url,
@@ -148,7 +165,7 @@ class Petition{
       'age' : pet.edad,
       'raza' : pet.raza,
       'address' : pet.address,
-      'phone' : pet.phone,
+      'phone' : 570000000000 + pet.phone,
       'department' : pet.departament,
       'city' : pet.city,
       'url' : pet.url,
@@ -160,4 +177,60 @@ class Petition{
       print('Error updating document: $e');
     }
   }
+  Future<void> beginAdopt(String id) async {
+    await firestore.collection('Estados').add({
+      'idMascota': id,
+      'correoSolicitante': Authentication.correo,
+      'state': 'In progress',
+      'review': ''
+    });
+  }
+  Future<String> isState(String id) async {
+    String result = '';
+    QuerySnapshot reference = await firestore.collection('Estados')
+      .where('idMascota', isEqualTo: id)
+      .where('correoSolicitante', isEqualTo: Authentication.correo)
+      .get();
+    if(reference.docs.isNotEmpty) {
+      DocumentSnapshot snapshot = reference.docs[0];
+      result = snapshot.id;
+    }
+    return result;
+  }
+  Future<void> updateState(String id,String review) async {
+    Map<String,dynamic> data = {
+      'review' : review,
+      'state' : 'Finalizado'
+    };
+    try{
+      await firestore.collection('Estados').doc(id).update(data);
+    }catch(e){
+      print('Error updating document: $e');
+    }
+  }
+  Future<int> countDocumentsInPetsCollection() async {
+  try {
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Pets') // Reemplaza 'Pets' por el nombre de tu colección
+        .get();
+    // Retorna la cantidad de documentos en la colección
+    return snapshot.size;
+  } catch (e) {
+    print('Error al contar documentos en la colección Pets: $e');
+    return -1; // Manejo de errores
+  }
+}
+Future<int> countMosquera() async {
+  try {
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('User')
+        .where('city',isEqualTo: "Mosquera")
+        .get();
+    // Retorna la cantidad de documentos en la colección
+    return snapshot.size;
+  } catch (e) {
+    print('Error al contar documentos en la colección Pets: $e');
+    return -1; // Manejo de errores
+  }
+}
 }

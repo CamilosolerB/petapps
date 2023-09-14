@@ -19,7 +19,8 @@ class _NewUserState extends State<NewUser> {
     final phone = int.parse(telefonoController.text);
     final address = direccionController.text;   
     final bornDate = "${selectedDate.toLocal()}".split(' ')[0];
-    final usuario = User(cedula: cedula, nombre: nombre, email: email, phone: phone, address: address, bornDate: bornDate);
+    final city = cityController.text;
+    final usuario = User(cedula: cedula, nombre: nombre, email: email, phone: phone, address: address, bornDate: bornDate, city: city);
     Petition().addUser(usuario);
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
   }
@@ -28,6 +29,7 @@ class _NewUserState extends State<NewUser> {
   final cedulaController = TextEditingController();
   final direccionController = TextEditingController();
   final telefonoController = TextEditingController();
+  final cityController = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
@@ -103,6 +105,18 @@ class _NewUserState extends State<NewUser> {
                   hintText: "Telefono",
                   labelText: "Telefono *",
                   icon: Icon(Icons.phone),
+                  iconColor: Colors.black
+                  ),
+                ),
+                width: 250
+              ),
+              Container(
+                child: TextFormField(
+                  controller: cityController,
+                  decoration: InputDecoration(
+                  hintText: "Ciudad de residencia",
+                  labelText: "Ciudad de residencia *",
+                  icon: Icon(Icons.location_city),
                   iconColor: Colors.black
                   ),
                 ),
