@@ -149,6 +149,9 @@ class _LoginState extends State<Login> {
                           ElevatedButton(onPressed: (){
                             checkEmailAndPassword();
                           }, child: const Text('Iniciar sesion')),
+                          ElevatedButton(onPressed: (){
+                            checkEmailAndPassword();
+                          }, child: const Text('Registrate')),
                           InkWell(
                             child: const Text("¿Haz olvidado tu contraseña?", style: TextStyle( color: Colors.white),),
                             onTap: (){

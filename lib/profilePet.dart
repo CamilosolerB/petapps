@@ -147,26 +147,20 @@ class _ProfilePetState extends State<ProfilePet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.pet.nombre),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.indigo
+      ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
           SizedBox(
             child: Column(
               children: [
                 if (!isEditMode)
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    width: MediaQuery.of(context).size.height * 0.3,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(widget.pet.url),

@@ -58,6 +58,10 @@ class _ServicesState extends State<Services> {
                       MaterialPageRoute(builder: (context) => FormPets(title: "Formulario registro mascotas",collection: 'Pets',)),
                     );
                   },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blueAccent,
+                    onPrimary: Colors.white
+                  ),
                   child: Text("Dar en Adopcion"),
                 ),
                 listaMascotas.isEmpty
@@ -89,6 +93,10 @@ class _ServicesState extends State<Services> {
                 MaterialPageRoute(builder: (context) => FormPets(title: "Formulario busqueda mascotas", collection: 'Disapear',)),
               );
             },
+            style: ElevatedButton.styleFrom(
+                    primary: Colors.purple,
+                    onPrimary: Colors.white
+                  ),
             child: Text("Reportar mascota"),
           ),
           disapear.isEmpty
