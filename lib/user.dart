@@ -1,4 +1,4 @@
-class User{
+class Users{
   int cedula;
   String nombre;
   String email;
@@ -6,7 +6,7 @@ class User{
   String address;
   String bornDate;
   String city;
-  User({
+  Users({
     required this.cedula,
     required this.nombre,
     required this.email,

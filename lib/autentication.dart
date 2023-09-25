@@ -48,17 +48,17 @@ class Authentication{
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
-    } else {
+    }
+    }
+  Future<void> createUserWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async{
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
           password: password);
       correo = email;
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
-      // ignore: use_build_context_synchronously
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
-    }
-    }
+  }
   //ingresa o registra por google
   Future<void> singUpAndSingInWithGoogle(BuildContext context) async {
     final GoogleSignIn googleSignIn = GoogleSignIn( clientId: "562461045714-bfru0auqj70siouajna01o718dk061tq.apps.googleusercontent.com" );

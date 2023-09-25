@@ -55,7 +55,7 @@ class _ServicesState extends State<Services> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FormPets(title: "Formulario registro mascotas",collection: 'Pets',)),
+                      MaterialPageRoute(builder: (context) => FormPets(title: "Formulario registro mascotas",collection: 'Pets', message: "Su mascota ha sido publicada para el proceso de adopción",)),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -90,7 +90,7 @@ class _ServicesState extends State<Services> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FormPets(title: "Formulario busqueda mascotas", collection: 'Disapear',)),
+                MaterialPageRoute(builder: (context) => FormPets(title: "Formulario busqueda mascotas", collection: 'Disapear',message: "Su mascota ya ha sido reportada como perdida",)),
               );
             },
             style: ElevatedButton.styleFrom(

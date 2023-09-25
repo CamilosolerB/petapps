@@ -32,7 +32,7 @@ class Petition{
     return snapshot.docs.isNotEmpty;
   }
 
-  Future<void> addUser(User user){
+  Future<void> addUser(Users user){
     counterSingIn();
     return firestore
       .collection('User')

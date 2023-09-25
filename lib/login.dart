@@ -1,3 +1,4 @@
+import 'package:adopt_me/newUser.dart';
 import 'package:flutter/material.dart';
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/forgot.dart';
@@ -150,7 +151,8 @@ class _LoginState extends State<Login> {
                             checkEmailAndPassword();
                           }, child: const Text('Iniciar sesion')),
                           ElevatedButton(onPressed: (){
-                            checkEmailAndPassword();
+                            Navigator.push(context, 
+                            MaterialPageRoute(builder: (context) => NewUser()));
                           }, child: const Text('Registrate')),
                           InkWell(
                             child: const Text("¿Haz olvidado tu contraseña?", style: TextStyle( color: Colors.white),),
@@ -175,12 +177,6 @@ class _LoginState extends State<Login> {
                           singUpAndSingInWithGoogle();
                         } ,
                       ),
-                      IconButton(
-                        icon: Image.asset('img/logoFacebook.png'),
-                        onPressed: (){
-                          singInWithFacebook();
-                        } ,
-                      )
                     ],
                   ),
                 ),

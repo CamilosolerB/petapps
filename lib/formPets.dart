@@ -11,8 +11,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class FormPets extends StatefulWidget {
   final title;
+  final message;
   final collection;
-  const FormPets({required this.title, required this.collection});
+  const FormPets({
+    required this.title, 
+    required this.collection,
+    required this.message
+    });
 
   @override
   State<FormPets> createState() => _FormPetsState();
@@ -21,7 +26,7 @@ class FormPets extends StatefulWidget {
 class _FormPetsState extends State<FormPets> {
       void succestoast(){
       Fluttertoast.showToast(
-        msg: "Su mascota ya se encuentra publica para adopcion",
+        msg: widget.message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM
       );
@@ -219,7 +224,7 @@ class _FormPetsState extends State<FormPets> {
                     ),
                     child: Center(
                       child: Text(
-                        "Dar en adopción",
+                        "Subir",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,

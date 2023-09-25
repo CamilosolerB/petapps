@@ -1,6 +1,7 @@
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/querys.dart';
 import 'package:adopt_me/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:adopt_me/home.dart';
 
@@ -20,7 +21,7 @@ class _NewUserState extends State<NewUser> {
     final address = direccionController.text;   
     final bornDate = "${selectedDate.toLocal()}".split(' ')[0];
     final city = cityController.text;
-    final usuario = User(cedula: cedula, nombre: nombre, email: email, phone: phone, address: address, bornDate: bornDate, city: city);
+    final usuario = Users(cedula: cedula, nombre: nombre, email: email, phone: phone, address: address, bornDate: bornDate, city: city);
     Petition().addUser(usuario);
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
   }
@@ -30,6 +31,8 @@ class _NewUserState extends State<NewUser> {
   final direccionController = TextEditingController();
   final telefonoController = TextEditingController();
   final cityController = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
@@ -44,6 +47,18 @@ class _NewUserState extends State<NewUser> {
       });
     }
   }
+Future<void> checkEmailAndPassword() async{
+    try {
+      await Authentication().createUserWithEmailAndPassword(
+          email: _controllerEmail.text,
+          password: _controllerPassword.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message!)));
+      });
+    }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +84,30 @@ class _NewUserState extends State<NewUser> {
                   hintText: "Nombre",
                   labelText: "Nombre *",
                   icon: Icon(Icons.account_circle_rounded),
+                  iconColor: Colors.black
+                  ),
+                ),
+                width: 250
+              ),
+              Container(
+                child: TextFormField(
+                  controller: _controllerEmail,
+                  decoration: InputDecoration(
+                  hintText: "Correo",
+                  labelText: "Correo *",
+                  icon: Icon(Icons.email),
+                  iconColor: Colors.black
+                  ),
+                ),
+                width: 250
+              ),
+              Container(
+                child: TextFormField(
+                  controller: _controllerPassword,
+                  decoration: InputDecoration(
+                  hintText: "Contraseña",
+                  labelText: "Contraseña *",
+                  icon: Icon(Icons.password),
                   iconColor: Colors.black
                   ),
                 ),
@@ -153,6 +192,8 @@ class _NewUserState extends State<NewUser> {
                     )
                 ),
                 onTap: (){
+                  Authentication.correo = _controllerEmail.text;
+                  checkEmailAndPassword();
                   enviarFormulario();
                 },
               )
