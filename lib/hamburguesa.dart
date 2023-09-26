@@ -1,8 +1,10 @@
+import 'package:adopt_me/analitycs_services.dart';
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/events.dart';
 import 'package:adopt_me/login.dart';
 import 'package:adopt_me/missing.dart';
 import 'package:adopt_me/pqrs.dart';
+import 'package:adopt_me/services.dart';
 import 'package:flutter/material.dart';
 
 class Hamburguer extends StatefulWidget {
@@ -62,6 +64,7 @@ class _HamburguerState extends State<Hamburguer> {
           title: const Text('Inicio'),
           selected: _selectedIndex == 0,
           onTap: () {
+            AnalyticsServices.isDisapear = false;
             // Update the state of the app
             _onItemTapped(0);
             // Then close the drawer
@@ -72,6 +75,7 @@ class _HamburguerState extends State<Hamburguer> {
           title: const Text('Mascotas perdidas'),
           selected: _selectedIndex == 1,
           onTap: () {
+            AnalyticsServices.isDisapear = true;
             // Update the state of the app
             _onItemTapped(1);
             EventsFirebase().seeMissing();

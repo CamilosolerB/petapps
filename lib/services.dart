@@ -1,3 +1,5 @@
+import 'package:adopt_me/analitycs_services.dart';
+import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/formPets.dart';
 import 'package:adopt_me/pets.dart';
 import 'package:adopt_me/querys.dart';
@@ -53,6 +55,7 @@ class _ServicesState extends State<Services> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    AnalyticsServices.isDisapear = false;
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => FormPets(title: "Formulario registro mascotas",collection: 'Pets', message: "Su mascota ha sido publicada para el proceso de adopción",)),
@@ -88,6 +91,7 @@ class _ServicesState extends State<Services> {
                 )),
                 ElevatedButton(
             onPressed: () {
+              AnalyticsServices.isDisapear = true;
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => FormPets(title: "Formulario busqueda mascotas", collection: 'Disapear',message: "Su mascota ya ha sido reportada como perdida",)),

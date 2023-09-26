@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:adopt_me/analitycs_services.dart';
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/pets.dart';
 import 'package:adopt_me/querys.dart';
@@ -13,38 +14,38 @@ class FormPets extends StatefulWidget {
   final title;
   final message;
   final collection;
-  const FormPets({
-    required this.title, 
-    required this.collection,
-    required this.message
-    });
+  const FormPets(
+      {required this.title, required this.collection, required this.message});
 
   @override
   State<FormPets> createState() => _FormPetsState();
 }
 
 class _FormPetsState extends State<FormPets> {
-      void succestoast(){
-      Fluttertoast.showToast(
+  void succestoast() {
+    Fluttertoast.showToast(
         msg: widget.message,
         toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM
-      );
-    }
+        gravity: ToastGravity.BOTTOM);
+  }
 
-    //controllers
+  //controllers
   final nombreController = TextEditingController();
   final edadController = TextEditingController();
   final razaController = TextEditingController();
   final addressController = TextEditingController();
   final phoneController = TextEditingController();
+  final motivoController = TextEditingController();
+  final saludController = TextEditingController();
   String departamentController = "";
   String cityController = "";
   String urlController = "";
+  String tipoFecha = "";
 
   Future<void> postPet() async {
     final name = nombreController.text;
     final age = int.parse(edadController.text);
+    final fecha = tipoFecha;
     final raza = razaController.text;
     final address = addressController.text;
     final phone = int.parse(phoneController.text);
@@ -52,8 +53,23 @@ class _FormPetsState extends State<FormPets> {
     final city = cityController;
     final url = urlController;
     final email = Authentication.correo;
-    final pet = Pets(nombre: name, edad: age, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email, id: '');
-    Petition().addPet(pet,widget.collection);
+    final motivo = motivoController.text;
+    final salud = saludController.text;
+    final pet = Pets(
+        nombre: name,
+        edad: age,
+        tipoEdad: fecha,
+        raza: raza,
+        address: address,
+        phone: phone,
+        departament: departament,
+        city: city,
+        url: url,
+        email: email,
+        motivo: motivo,
+        salud: salud,
+        id: '');
+    Petition().addPet(pet, widget.collection);
     succestoast();
   }
 
@@ -67,9 +83,11 @@ class _FormPetsState extends State<FormPets> {
       String fileName = fileResult.files.first.name;
       File? file = File(pickedFile.path!);
       Petition().loadPhoto(file, fileName);
-      urlController = 'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
+      urlController =
+          'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
     }
   }
+
   //declare the variables
   List data = [];
   int _valueDepartamento = 1;
@@ -77,7 +95,8 @@ class _FormPetsState extends State<FormPets> {
   List<String> _municipios = [];
 
   Future<void> getData() async {
-    String url = "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
+    String url =
+        "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
     final response = await http.get(Uri.parse(url));
     data = jsonDecode(response.body);
     setState(() {});
@@ -86,11 +105,14 @@ class _FormPetsState extends State<FormPets> {
   @override
   void initState() {
     super.initState();
+    tipoFecha = 'Años';
     getData();
   }
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigo,
@@ -99,6 +121,23 @@ class _FormPetsState extends State<FormPets> {
         titleTextStyle: TextStyle(
           color: Colors.white,
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                try {
+                  getFile();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        "Hubo un error al subir la imagen, inténtalo de nuevo más tarde"),
+                  ));
+                }
+              },
+              icon: Icon(
+                Icons.add_a_photo,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: Center(
         child: Container(
@@ -118,18 +157,40 @@ class _FormPetsState extends State<FormPets> {
                   ),
                   width: 250,
                 ),
-                Container(
-                  child: TextFormField(
-                    controller: edadController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Edad",
-                      labelText: "Edad *",
-                      icon: Icon(Icons.access_time_filled),
-                      iconColor: Colors.black,
+                SizedBox(
+                  child: Row(children: [
+                    Container(
+                      padding: EdgeInsets.only(left: 50),
+                      width: width * 0.6,
+                      child: TextFormField(
+                        controller: edadController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: "Edad",
+                          labelText: "Edad *",
+                          icon: Icon(Icons.access_time_filled),
+                          iconColor: Colors.black,
+                        ),
+                      ),
                     ),
-                  ),
-                  width: 250,
+                    Container(
+                      child: DropdownButton<String>(
+                        value: tipoFecha,
+                        items: <String>['Años', 'Meses', 'Dias']
+                            .map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (v) {
+                          setState(() {
+                            tipoFecha = v!;
+                          });
+                        },
+                      ),
+                    )
+                  ]),
                 ),
                 Container(
                   child: TextFormField(
@@ -168,18 +229,49 @@ class _FormPetsState extends State<FormPets> {
                   ),
                   width: 250,
                 ),
+                !AnalyticsServices.isDisapear ?
+                Container(
+                  child: TextField(
+                    controller: motivoController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      hintText: "Motivo de adopcion",
+                      labelText: "Motivo *",
+                      icon: Icon(Icons.question_answer),
+                      iconColor: Colors.black,
+                    ),
+                  ),
+                  width: 250,
+                ) : Text(""),
+                Container(
+                  child: TextField(
+                    controller: saludController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      hintText: "Enfermedades de la mascota",
+                      labelText: "Enfermedades de la mascota *",
+                      icon: Icon(Icons.local_hospital),
+                      iconColor: Colors.black,
+                    ),
+                  ),
+                  width: 250,
+                ),
                 Column(
                   children: [
                     Text("Departamento"),
                     DropdownButton(
                       value: _valueDepartamento,
                       items: data.map((e) {
-                        return DropdownMenuItem(child: Text(e["departamento"]), value: e["id"]);
+                        return DropdownMenuItem(
+                            child: Text(e["departamento"]), value: e["id"]);
                       }).toList(),
                       onChanged: (v) {
                         setState(() {
                           _valueDepartamento = v as int;
-                          departamentController = data[_valueDepartamento]["departamento"];
+                          departamentController =
+                              data[_valueDepartamento]["departamento"];
                           _municipios = List<String>.from(data[v]["ciudades"]);
                           _valueMunicipio = _municipios[0];
                         });
@@ -189,7 +281,8 @@ class _FormPetsState extends State<FormPets> {
                     DropdownButton(
                       value: _valueMunicipio,
                       items: _municipios.map((municipio) {
-                        return DropdownMenuItem(child: Text(municipio), value: municipio);
+                        return DropdownMenuItem(
+                            child: Text(municipio), value: municipio);
                       }).toList(),
                       onChanged: (v) {
                         setState(() {
@@ -199,19 +292,6 @@ class _FormPetsState extends State<FormPets> {
                       },
                     ),
                   ],
-                ),
-                ElevatedButton.icon(
-                  icon: Icon(Icons.add_a_photo),
-                  onPressed: () {
-                    try {
-                      getFile();
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Hubo un error al subir la imagen, inténtalo de nuevo más tarde"),
-                      ));
-                    }
-                  },
-                  label: Text("Subir foto"),
                 ),
                 InkWell(
                   child: Container(

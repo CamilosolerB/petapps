@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:adopt_me/analitycs_services.dart';
 import 'package:adopt_me/autentication.dart';
 import 'package:adopt_me/events.dart';
 import 'package:adopt_me/pets.dart';
@@ -25,11 +26,13 @@ class _ProfilePetState extends State<ProfilePet> {
   List<String> _municipios = [];
 
   Future<void> getData() async {
-    String url = "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
+    String url =
+        "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
     final response = await http.get(Uri.parse(url));
     data = jsonDecode(response.body);
     setState(() {});
   }
+
   bool isEditMode = false;
   late TextEditingController nombreController;
   late TextEditingController edadController;
@@ -37,27 +40,33 @@ class _ProfilePetState extends State<ProfilePet> {
   late TextEditingController addressController;
   late TextEditingController phoneController;
   late TextEditingController idController;
+  late TextEditingController motivoController;
   late TextEditingController reviewController;
+  late TextEditingController saludController;
   String departamentController = "";
   String cityController = "";
-  String urlController= "";
+  String urlController = "";
+  String tipoEdadController = "";
   String state = "";
-  Future<void> stateFuture () async{
+  Future<void> stateFuture() async {
     state = await Petition().isState(widget.pet.id);
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     nombreController = TextEditingController(text: widget.pet.nombre);
     edadController = TextEditingController(text: widget.pet.edad.toString());
     razaController = TextEditingController(text: widget.pet.raza);
     addressController = TextEditingController(text: widget.pet.address);
     phoneController = TextEditingController(text: widget.pet.phone.toString());
+    motivoController = TextEditingController(text: widget.pet.motivo);
     idController = TextEditingController(text: widget.pet.id);
-    String departamentController = widget.pet.departament;
-    String cityController = widget.pet.city;
-    String urlController = widget.pet.url;
+    saludController = TextEditingController(text: widget.pet.salud);
+    tipoEdadController = widget.pet.tipoEdad;
+    departamentController = widget.pet.departament;
+    cityController = widget.pet.city;
+    urlController = widget.pet.url;
     stateFuture();
     print(state);
     getData();
@@ -71,6 +80,8 @@ class _ProfilePetState extends State<ProfilePet> {
     addressController.dispose();
     phoneController.dispose();
     idController.dispose();
+    saludController.dispose();
+    motivoController.dispose();
     super.dispose();
   }
 
@@ -81,11 +92,12 @@ class _ProfilePetState extends State<ProfilePet> {
   }
 
   void _saveChanges() {
-    if(urlController == ""){
+    if (urlController == "") {
       urlController = widget.pet.url;
     }
     final name = nombreController.text;
     final age = int.parse(edadController.text);
+    final tipoEdad = tipoEdadController;
     final raza = razaController.text;
     final address = addressController.text;
     final phone = int.parse(phoneController.text);
@@ -93,14 +105,30 @@ class _ProfilePetState extends State<ProfilePet> {
     final city = cityController;
     final url = urlController;
     final email = Authentication.correo;
+    final motivo = motivoController.text;
+    final salud = saludController.text;
     final id = idController.text;
-    final pet = Pets(nombre: name, edad: age, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email, id: id);
+    final pet = Pets(
+        nombre: name,
+        edad: age,
+        tipoEdad: tipoEdad,
+        raza: raza,
+        address: address,
+        phone: phone,
+        departament: departament,
+        city: city,
+        url: url,
+        email: email,
+        motivo: motivo,
+        salud: salud,
+        id: id);
     Petition().updatePet(pet, 'Pets');
-      setState(() {
-        isEditMode = false;
-      });
+    setState(() {
+      isEditMode = false;
+    });
   }
-    Future<void> getFile() async {
+
+  Future<void> getFile() async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false,
@@ -110,11 +138,12 @@ class _ProfilePetState extends State<ProfilePet> {
       String fileName = fileResult.files.first.name;
       File? file = File(pickedFile.path!);
       Petition().loadPhoto(file, fileName);
-      urlController = 'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
+      urlController =
+          'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
     }
   }
 
-    void _launchWhatsApp() async {
+  void _launchWhatsApp() async {
     final phoneNumber = widget.pet.phone;
     final whatsappUrl = "https://wa.me/$phoneNumber";
 
@@ -148,10 +177,26 @@ class _ProfilePetState extends State<ProfilePet> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.pet.nombre),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo
-      ),
+          title: Text(widget.pet.nombre),
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.indigo,
+          actions: [
+             IconButton(
+              onPressed: () {
+                try {
+                  getFile();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        "Hubo un error al subir la imagen, inténtalo de nuevo más tarde"),
+                  ));
+                }
+              },
+              icon: Icon(
+                Icons.add_a_photo,
+                color: Colors.white,
+              ))
+          ],),
       body: Column(
         children: [
           SizedBox(
@@ -192,125 +237,171 @@ class _ProfilePetState extends State<ProfilePet> {
                           ),
                           width: 250,
                         ),
-                Container(
-                  child: TextFormField(
-                    controller: edadController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor, ingrese un nombre.';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Edad",
-                      labelText: "Edad en años*",
-                      icon: Icon(Icons.access_time_filled),
-                      iconColor: Colors.black,
-                    ),
-                  ),
-                  width: 250,
-                ),
-                Container(
-                  child: TextFormField(
-                    controller: razaController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor, ingrese un nombre.';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Raza",
-                      labelText: "Raza *",
-                      icon: Icon(Icons.pets),
-                      iconColor: Colors.black,
-                    ),
-                  ),
-                  width: 250,
-                ),
-                Container(
-                  child: TextFormField(
-                    controller: addressController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor, ingrese un nombre.';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Dirección",
-                      labelText: "Dirección *",
-                      icon: Icon(Icons.home_outlined),
-                      iconColor: Colors.black,
-                    ),
-                  ),
-                  width: 250,
-                ),
-                Container(
-                  child: TextFormField(
-                    controller: phoneController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor, ingrese un nombre.';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Teléfono contacto",
-                      labelText: "Teléfono *",
-                      icon: Icon(Icons.phone),
-                      iconColor: Colors.black,
-                    ),
-                  ),
-                  width: 250,
-                ),
-                Column(
-                  children: [
-                    Text("Departamento"),
-                    DropdownButton(
-                      value: _valueDepartamento,
-                      items: data.map((e) {
-                        return DropdownMenuItem(child: Text(e["departamento"]), value: e["id"]);
-                      }).toList(),
-                      onChanged: (v) {
-                        setState(() {
-                          _valueDepartamento = v as int;
-                          departamentController = data[_valueDepartamento]["departamento"];
-                          _municipios = List<String>.from(data[v]["ciudades"]);
-                          _valueMunicipio = _municipios[0];
-                        });
-                      },
-                    ),
-                    Text("Municipio"),
-                    DropdownButton(
-                      value: _valueMunicipio,
-                      items: _municipios.map((municipio) {
-                        return DropdownMenuItem(child: Text(municipio), value: municipio);
-                      }).toList(),
-                      onChanged: (v) {
-                        setState(() {
-                          _valueMunicipio = v!;
-                          cityController = _valueMunicipio;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  icon: Icon(Icons.add_a_photo),
-                  onPressed: () {
-                    try {
-                      getFile();
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Hubo un error al subir la imagen, inténtalo de nuevo más tarde"),
-                      ));
-                    }
-                  },
-                  label: Text("Cambiar foto"),
-                ),   // Más campos de edición aquí...
+                        Row(
+                          children: [
+                            Container(
+                              child: TextFormField(
+                                controller: edadController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Por favor, ingrese un nombre.';
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  hintText: "Edad",
+                                  labelText: "Edad *",
+                                  icon: Icon(Icons.access_time_filled),
+                                  iconColor: Colors.black,
+                                ),
+                              ),
+                              width: 250,
+                            ),
+                            Container(
+                              child: DropdownButton<String>(
+                                value: tipoEdadController,
+                                items: <String>['Años', 'Meses', 'Dias']
+                                    .map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (v) {
+                                  setState(() {
+                                    tipoEdadController = v!;
+                                  });
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                        Container(
+                          child: TextFormField(
+                            controller: razaController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Por favor, ingrese un nombre.';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Raza",
+                              labelText: "Raza *",
+                              icon: Icon(Icons.pets),
+                              iconColor: Colors.black,
+                            ),
+                          ),
+                          width: 250,
+                        ),
+                        Container(
+                          child: TextFormField(
+                            controller: addressController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Por favor, ingrese un nombre.';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Dirección",
+                              labelText: "Dirección *",
+                              icon: Icon(Icons.home_outlined),
+                              iconColor: Colors.black,
+                            ),
+                          ),
+                          width: 250,
+                        ),
+                        Container(
+                          child: TextFormField(
+                            controller: phoneController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Por favor, ingrese un nombre.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: "Teléfono contacto",
+                              labelText: "Teléfono *",
+                              icon: Icon(Icons.phone),
+                              iconColor: Colors.black,
+                            ),
+                          ),
+                          width: 250,
+                        ),
+                        !AnalyticsServices.isDisapear ?
+                        Container(
+                          child: TextFormField(
+                            controller: motivoController,
+                            keyboardType: TextInputType.multiline,
+                            decoration: InputDecoration(
+                              hintText: "Motivo adopcion",
+                              labelText: "Motivo *",
+                              icon: Icon(Icons.question_answer),
+                              iconColor: Colors.black,
+                            ),
+                          ),
+                          width: 250,
+                        ) : Text(""),
+                        Container(
+                          child: TextFormField(
+                            controller: saludController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Por favor, ingrese un nombre.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.multiline,
+                            decoration: InputDecoration(
+                              hintText: "Enfermedades",
+                              labelText: "Enfermedades *",
+                              icon: Icon(Icons.local_hospital),
+                              iconColor: Colors.black,
+                            ),
+                          ),
+                          width: 250,
+                        ),
+                        Column(
+                          children: [
+                            Text("Departamento"),
+                            DropdownButton(
+                              value: _valueDepartamento,
+                              items: data.map((e) {
+                                return DropdownMenuItem(
+                                    child: Text(e["departamento"]),
+                                    value: e["id"]);
+                              }).toList(),
+                              onChanged: (v) {
+                                setState(() {
+                                  _valueDepartamento = v as int;
+                                  departamentController =
+                                      data[_valueDepartamento]["departamento"];
+                                  _municipios =
+                                      List<String>.from(data[v]["ciudades"]);
+                                  _valueMunicipio = _municipios[0];
+                                });
+                              },
+                            ),
+                            Text("Municipio"),
+                            DropdownButton(
+                              value: _valueMunicipio,
+                              items: _municipios.map((municipio) {
+                                return DropdownMenuItem(
+                                    child: Text(municipio), value: municipio);
+                              }).toList(),
+                              onChanged: (v) {
+                                setState(() {
+                                  _valueMunicipio = v!;
+                                  cityController = _valueMunicipio;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -321,12 +412,15 @@ class _ProfilePetState extends State<ProfilePet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Nombre: ${widget.pet.nombre}'),
-                        Text('Edad: ${widget.pet.edad} años'),
+                        Text('Edad: ${widget.pet.edad} ${widget.pet.tipoEdad}'),
                         Text('Raza: ${widget.pet.raza}'),
                         Text('Dirección: ${widget.pet.address}'),
                         Text('Teléfono: ${widget.pet.phone.toString()}'),
                         Text('Departamento: ${widget.pet.departament}'),
                         Text('Ciudad: ${widget.pet.city}'),
+                        Text('Enfermedades: ${widget.pet.salud}'),
+                        if(!AnalyticsServices.isDisapear)
+                        Text('Motivo: ${widget.pet.motivo}'),
                       ],
                     ),
                   ),
@@ -374,7 +468,8 @@ class _ProfilePetState extends State<ProfilePet> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Eliminar Mascota'),
-                                    content: Text('¿Está seguro de que desea eliminar esta mascota?'),
+                                    content: Text(
+                                        '¿Está seguro de que desea eliminar esta mascota?'),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -385,7 +480,10 @@ class _ProfilePetState extends State<ProfilePet> {
                                       TextButton(
                                         onPressed: () {
                                           Petition().deletePet(widget.pet.id);
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Su mascota ha sido retirada")));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      "Su mascota ha sido retirada")));
                                           Navigator.of(context).pop();
                                         },
                                         child: Text('Eliminar'),
@@ -402,101 +500,116 @@ class _ProfilePetState extends State<ProfilePet> {
                     : Column(
                         children: [
                           Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                            onPressed: (){
-                              _launchWhatsApp();
-                              Petition().beginAdopt(idController.text);
-                            },
-                            child: Text('Contact via WhatsApp'),
-                          ),
-                          ElevatedButton(
-                            onPressed: (){
-                              _launchPhoneDialer();
-                              Petition().beginAdopt(idController.text);
-                            },
-                            child: Text('Contact via Phone'),
-                          )
-                        ],
-                      ),
-                      if(state.isNotEmpty)
-                        ElevatedButton(
-                        onPressed: () async {
-                          final firstDialogResult = await showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: Text('¿Finalizar proceso?'),
-                              content: Text('¿Estás seguro de finalizar el proceso de adopción?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'No'),
-                                  child: const Text('No'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'Si'),
-                                  child: const Text('Si'),
-                                ),
-                              ],
-                            ),
-                          );
-
-                          if (firstDialogResult == 'Si') {
-                            if(cityController == "Mosquera"){
-                              EventsFirebase().adoptMosquera();
-                            }
-                            EventsFirebase().percentAdopt();
-                            final secondDialogResult = await showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: Text('Fin proceso'),
-                                content: Text('¿La adopción se realizó?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, 'Si'),
-                                    child: const Text('Si'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, 'No'),
-                                    child: const Text('No'),
-                                  ),
-                                ],
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  _launchWhatsApp();
+                                  Petition().beginAdopt(idController.text);
+                                },
+                                child: Text('Contact via WhatsApp'),
                               ),
-                            );
-
-                            if (secondDialogResult == 'Si' || secondDialogResult == 'No') {
-                              if(secondDialogResult == 'Si'){
-                                Petition().deletePet(idController.text);
-                              }
-                              final reviewController = TextEditingController();
-                              final feedbackResult = await showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                  title: Text('Danos una retroalimentación'),
-                                  content: TextField(
-                                    maxLines: null,
-                                    keyboardType: TextInputType.multiline,
-                                    controller: reviewController,
+                              ElevatedButton(
+                                onPressed: () {
+                                  _launchPhoneDialer();
+                                  Petition().beginAdopt(idController.text);
+                                },
+                                child: Text('Contact via Phone'),
+                              )
+                            ],
+                          ),
+                          if (state.isNotEmpty)
+                            ElevatedButton(
+                              onPressed: () async {
+                                final firstDialogResult =
+                                    await showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                    title: Text('¿Finalizar proceso?'),
+                                    content: Text(
+                                        '¿Estás seguro de finalizar el proceso de adopción?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, 'No'),
+                                        child: const Text('No'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, 'Si'),
+                                        child: const Text('Si'),
+                                      ),
+                                    ],
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, 'Enviar'),
-                                      child: const Text('Enviar'),
+                                );
+
+                                if (firstDialogResult == 'Si') {
+                                  if (cityController == "Mosquera") {
+                                    EventsFirebase().adoptMosquera();
+                                  }
+                                  EventsFirebase().percentAdopt();
+                                  final secondDialogResult =
+                                      await showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: Text('Fin proceso'),
+                                      content: Text('¿La adopción se realizó?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Si'),
+                                          child: const Text('Si'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'No'),
+                                          child: const Text('No'),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
+                                  );
 
-                              if (feedbackResult == 'Enviar') {
-                                Petition().updateState(state, reviewController.text);
-                              }
-                            }
-                          }
-                        },
-                        child: Text('Finalizar'),
-                        )
+                                  if (secondDialogResult == 'Si' ||
+                                      secondDialogResult == 'No') {
+                                    if (secondDialogResult == 'Si') {
+                                      Petition().deletePet(idController.text);
+                                    }
+                                    final reviewController =
+                                        TextEditingController();
+                                    final feedbackResult =
+                                        await showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title:
+                                            Text('Danos una retroalimentación'),
+                                        content: TextField(
+                                          maxLines: null,
+                                          keyboardType: TextInputType.multiline,
+                                          controller: reviewController,
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Enviar'),
+                                            child: const Text('Enviar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
 
-                      ],
+                                    if (feedbackResult == 'Enviar') {
+                                      Petition().updateState(
+                                          state, reviewController.text);
+                                    }
+                                  }
+                                }
+                              },
+                              child: Text('Finalizar'),
+                            )
+                        ],
                       ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:adopt_me/analitycs_services.dart';
 import 'package:adopt_me/formPets.dart';
 import 'package:adopt_me/pets.dart';
 import 'package:adopt_me/profilePet.dart';
@@ -17,7 +18,6 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   final storage = FirebaseStorage.instance;
   List<Pets> listaMascotas = [];
-
   @override
   void initState() {
     super.initState();

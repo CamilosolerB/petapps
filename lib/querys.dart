@@ -43,7 +43,7 @@ class Petition{
         'phone' : user.phone,
         'bornDate' : user.bornDate,
         'address' : user.address,
-        'city' : user.city
+        'city' : user.city,
       })
       .then((value) => print("añadido"))
       .catchError((error) => print("Error: " + error));
@@ -76,6 +76,7 @@ class Petition{
       for(QueryDocumentSnapshot document in pets.docs){
           String nombre = document['name'];
           int edad = document['age'];
+          String tipoEdad = document['tipoEdad'];
           String raza = document['raza'];
           String address = document['address'];
           int phone = document['phone'];
@@ -83,9 +84,11 @@ class Petition{
           String city = document['city'];
           String url = document['url'];
           String email = document['email'];
+          String motivo = document['motivo'];
+          String salud   = document['salud'];
           DocumentSnapshot snapshot = pets.docs[count];
           String id = snapshot.id;
-          Pets pet = Pets(nombre: nombre, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email, id: id);
+          Pets pet = Pets(nombre: nombre,tipoEdad: tipoEdad, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id);
           petsList.add(pet);
           count++;
       }
@@ -104,6 +107,7 @@ class Petition{
       for(QueryDocumentSnapshot document in pets.docs){
           String nombre = document['name'];
           int edad = document['age'];
+          String tipoEdad = document['tipoEdad'];
           String raza = document['raza'];
           String address = document['address'];
           int phone = document['phone'];
@@ -111,9 +115,11 @@ class Petition{
           String city = document['city'];
           String url = document['url'];
           String email = document['email'];
+          String motivo = document['motivo'];
+          String salud = document['salud'];
           DocumentSnapshot snapshot = pets.docs[count];
           String id = snapshot.id;
-          Pets pet = Pets(nombre: nombre, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email, id: id);
+          Pets pet = Pets(nombre: nombre,tipoEdad: tipoEdad, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id);
           petsList.add(pet);
           count++;
       }
@@ -143,7 +149,10 @@ class Petition{
       'department' : pet.departament,
       'city' : pet.city,
       'url' : pet.url,
-      'email' : pet.email
+      'email' : pet.email,
+      'tipoEdad': pet.tipoEdad,
+      'motivo' : pet.motivo,
+      'salud' : pet.salud
     })
     .then((value) => print("exitoso"))
     .catchError((error)=> print("Error: " + error));
@@ -169,7 +178,10 @@ class Petition{
       'department' : pet.departament,
       'city' : pet.city,
       'url' : pet.url,
-      'email' : pet.email
+      'email' : pet.email,
+      'tipoEdad': pet.tipoEdad,
+      'motivo' : pet.motivo,
+      'salud' : pet.salud
     };
     try{
       await firestore.collection(collection).doc(id).update(updateData);

@@ -64,6 +64,7 @@ class _SliverPetsState extends State<SliverPets> {
                               onTap: () {
                                   String nombre = widget.pets[index].nombre;
                                   int edad = widget.pets[index].edad;
+                                  String tipoEdad = widget.pets[index].tipoEdad;
                                   String raza = widget.pets[index].raza;
                                   String address = widget.pets[index].address;
                                   int phone = widget.pets[index].phone;
@@ -71,8 +72,10 @@ class _SliverPetsState extends State<SliverPets> {
                                   String city = widget.pets[index].city;
                                   String url = widget.pets[index].url;
                                   String email = widget.pets[index].email;
+                                  String motivo = widget.pets[index].motivo;
+                                  String salud = widget.pets[index].salud;
                                   String id = widget.pets[index].id;
-                                  Pets pet = Pets(nombre: nombre, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email, id: id);
+                                  Pets pet = Pets(nombre: nombre, edad: edad,tipoEdad: tipoEdad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(builder: (context) => ProfilePet(pet: pet,))
                                   );
