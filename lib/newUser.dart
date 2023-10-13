@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:adopt_me/home.dart';
 
 class NewUser extends StatefulWidget {
-  const NewUser({super.key});
+  NewUser({ super.key});
 
   @override
   State<NewUser> createState() => _NewUserState();
@@ -16,7 +16,7 @@ class _NewUserState extends State<NewUser> {
   void enviarFormulario(){
     final cedula = int.parse(cedulaController.text);
     final nombre = nombreController.text;
-    final email = Authentication.correo;
+    final email = (Authentication.correo.isEmpty) ? _controllerEmail.text :Authentication.correo;
     final phone = int.parse(telefonoController.text);
     final address = direccionController.text;   
     final bornDate = "${selectedDate.toLocal()}".split(' ')[0];
@@ -89,6 +89,7 @@ Future<void> checkEmailAndPassword() async{
                 ),
                 width: 250
               ),
+              if(Authentication.correo.isEmpty)
               Container(
                 child: TextFormField(
                   controller: _controllerEmail,
@@ -101,6 +102,7 @@ Future<void> checkEmailAndPassword() async{
                 ),
                 width: 250
               ),
+              if(Authentication.correo.isEmpty)
               Container(
                 child: TextFormField(
                   controller: _controllerPassword,
@@ -192,8 +194,10 @@ Future<void> checkEmailAndPassword() async{
                     )
                 ),
                 onTap: (){
-                  Authentication.correo = _controllerEmail.text;
-                  checkEmailAndPassword();
+                  if(Authentication.correo.isEmpty){
+                    Authentication.correo = _controllerEmail.text;
+                    checkEmailAndPassword();
+                  }
                   enviarFormulario();
                 },
               )

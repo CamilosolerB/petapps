@@ -113,8 +113,8 @@ class _LoginState extends State<Login> {
                               controller: _controllerEmail,
                               decoration: const InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Escriba su correo electronico",
-                                  label: Text("Correo electronico"),
+                                  hintText: "Escriba su correo electrónico",
+                                  label: Text("Correo electrónico"),
                                   fillColor: Colors.white,
                                   contentPadding: EdgeInsets.all(5),
                                   hintStyle:  TextStyle(
@@ -149,13 +149,13 @@ class _LoginState extends State<Login> {
                           ),
                           ElevatedButton(onPressed: (){
                             checkEmailAndPassword();
-                          }, child: const Text('Iniciar sesion')),
+                          }, child: const Text('Iniciar sesión')),
                           ElevatedButton(onPressed: (){
                             Navigator.push(context, 
                             MaterialPageRoute(builder: (context) => NewUser()));
-                          }, child: const Text('Registrate')),
+                          }, child: const Text('Regístrate')),
                           InkWell(
-                            child: const Text("¿Haz olvidado tu contraseña?", style: TextStyle( color: Colors.white),),
+                            child: const Text("¿Has olvidado tu contraseña?", style: TextStyle( color: Colors.white),),
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const Forgot()));
                             },

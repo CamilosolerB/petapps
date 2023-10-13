@@ -22,9 +22,9 @@ class FormPets extends StatefulWidget {
 }
 
 class _FormPetsState extends State<FormPets> {
-  void succestoast() {
+  void succestoast(String message) {
     Fluttertoast.showToast(
-        msg: widget.message,
+        msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM);
   }
@@ -36,44 +36,53 @@ class _FormPetsState extends State<FormPets> {
   final addressController = TextEditingController();
   final phoneController = TextEditingController();
   final motivoController = TextEditingController();
-  final saludController = TextEditingController();
+  String saludController = "";
   String departamentController = "";
   String cityController = "";
   String urlController = "";
   String tipoFecha = "";
+  String tipoMascotaController = "";
+  bool isPicture = false;
 
   Future<void> postPet() async {
-    final name = nombreController.text;
-    final age = int.parse(edadController.text);
-    final fecha = tipoFecha;
-    final raza = razaController.text;
-    final address = addressController.text;
-    final phone = int.parse(phoneController.text);
-    final departament = departamentController;
-    final city = cityController;
-    final url = urlController;
-    final email = Authentication.correo;
-    final motivo = motivoController.text;
-    final salud = saludController.text;
-    final pet = Pets(
-        nombre: name,
-        edad: age,
-        tipoEdad: fecha,
-        raza: raza,
-        address: address,
-        phone: phone,
-        departament: departament,
-        city: city,
-        url: url,
-        email: email,
-        motivo: motivo,
-        salud: salud,
-        id: '');
-    Petition().addPet(pet, widget.collection);
-    succestoast();
+    if (!isPicture) {
+      succestoast("Por favor inserte una imagen de la mascota");
+    } else {
+      final name = nombreController.text;
+      final age = int.parse(edadController.text);
+      final fecha = tipoFecha;
+      final raza = razaController.text;
+      final address = addressController.text;
+      final phone = int.parse(phoneController.text);
+      final departament = departamentController;
+      final city = cityController;
+      final url = urlController;
+      final tipoMascota = tipoMascotaController;
+      final email = Authentication.correo;
+      final motivo = motivoController.text;
+      final salud = saludController;
+      final pet = Pets(
+          tipoMascota: tipoMascota,
+          nombre: name,
+          edad: age,
+          tipoEdad: fecha,
+          raza: raza,
+          address: address,
+          phone: phone,
+          departament: departament,
+          city: city,
+          url: url,
+          email: email,
+          motivo: motivo,
+          salud: salud,
+          id: '');
+      Petition().addPet(pet, widget.collection);
+      succestoast("Registro completado");
+    }
   }
 
-  Future<void> getFile() async {
+  Future<bool> getFile() async {
+    bool picture = false;
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false,
@@ -85,7 +94,9 @@ class _FormPetsState extends State<FormPets> {
       Petition().loadPhoto(file, fileName);
       urlController =
           'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
+      picture = true;
     }
+    return picture;
   }
 
   //declare the variables
@@ -106,6 +117,8 @@ class _FormPetsState extends State<FormPets> {
   void initState() {
     super.initState();
     tipoFecha = 'Años';
+    tipoMascotaController = 'Gato';
+    saludController = "Ninguna";
     getData();
   }
 
@@ -123,9 +136,9 @@ class _FormPetsState extends State<FormPets> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
+              onPressed: () async {
                 try {
-                  getFile();
+                  isPicture = await getFile();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
@@ -142,6 +155,7 @@ class _FormPetsState extends State<FormPets> {
       body: Center(
         child: Container(
           child: Form(
+              child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -192,6 +206,31 @@ class _FormPetsState extends State<FormPets> {
                     )
                   ]),
                 ),
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text("Tipo de mascota", style: TextStyle(
+                      fontSize: 20
+                    ),),
+                Container(
+                  width: width *0.6,
+                  height: height * 0.05,
+                  child: DropdownButton<String>(
+                    value: tipoMascotaController,
+                    items: <String>["Perro", "Gato", "Ave", "Pez", "Roedor"]
+                        .map((String valor) {
+                      return DropdownMenuItem<String>(
+                          value: valor, child: Text(valor));
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        tipoMascotaController = value!;
+                      });
+                    },
+                  ),
+                )
+                  ],
+                ),
                 Container(
                   child: TextFormField(
                     controller: razaController,
@@ -229,34 +268,46 @@ class _FormPetsState extends State<FormPets> {
                   ),
                   width: 250,
                 ),
-                !AnalyticsServices.isDisapear ?
+                !AnalyticsServices.isDisapear
+                    ? Container(
+                        child: TextField(
+                          controller: motivoController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: "Motivo de adopcion",
+                            labelText: "Motivo *",
+                            icon: Icon(Icons.question_answer),
+                            iconColor: Colors.black,
+                          ),
+                        ),
+                        width: 250,
+                      )
+                    : Text(""),
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text("Enfermedad principal", style: TextStyle(
+                      fontSize: 20
+                    ),),
                 Container(
-                  child: TextField(
-                    controller: motivoController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: "Motivo de adopcion",
-                      labelText: "Motivo *",
-                      icon: Icon(Icons.question_answer),
-                      iconColor: Colors.black,
-                    ),
+                  width: width *0.6,
+                  height: height * 0.05,
+                  child: DropdownButton<String>(
+                    value: saludController,
+                    items: <String>["Ninguna","Fisica", "Psicologica", "Degenerativa", "Respiratoria", "Cardilogica","Hormonal"]
+                        .map((String valor) {
+                      return DropdownMenuItem<String>(
+                          value: valor, child: Text(valor));
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        saludController = value!;
+                      });
+                    },
                   ),
-                  width: 250,
-                ) : Text(""),
-                Container(
-                  child: TextField(
-                    controller: saludController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: "Enfermedades de la mascota",
-                      labelText: "Enfermedades de la mascota *",
-                      icon: Icon(Icons.local_hospital),
-                      iconColor: Colors.black,
-                    ),
-                  ),
-                  width: 250,
+                )
+                  ],
                 ),
                 Column(
                   children: [
@@ -320,7 +371,7 @@ class _FormPetsState extends State<FormPets> {
                 )
               ],
             ),
-          ),
+          )),
         ),
       ),
     );

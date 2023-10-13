@@ -43,7 +43,7 @@ class _MissingState extends State<Missing> {
       body: Center(
       child: Column(
         children: [
-          Text("Por favor ayudanos a encontrarlos"),
+          Text("Por favor ayúdanos a encontrarlos"),
           listaMascotas.isEmpty
               ? Text('No hay datos disponibles.')
               : Container(

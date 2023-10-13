@@ -1,5 +1,6 @@
 class Pets {
   String nombre;
+  String tipoMascota;
   int edad;
   String tipoEdad;
   String raza;
@@ -16,6 +17,7 @@ class Pets {
 
   Pets({
       required this.nombre,
+      required this.tipoMascota,
       required this.edad,
       required this.tipoEdad,
       required this.raza,

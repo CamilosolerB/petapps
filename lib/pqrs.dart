@@ -17,36 +17,34 @@ class _PqrsState extends State<Pqrs> {
   Future<void> checkName() async {
     String? name = await Petition().checkName();
   }
+
   Future sendEmail({
     required String name,
     required String email,
     required String subject,
     required String message,
-  })async{
+  }) async {
     final serviceId = 'service_j0jkq1p';
     final templateId = 'template_fr6baph';
     final userId = 'wPU69yJ5b2BGSxo7E';
 
-
     final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-    final response  = await http.post(
-      url,
-      headers: {
-        'origin' : 'http://localhost',
-        'Content-Type':'application/json',
-      },
-      body: json.encode({
-        'service_id':serviceId,
-        'template_id':templateId,
-        'user_id':userId,
-        'template_params':{
-          'user_name': name,
-          'user_email': email,
-          'user_message': message,
-          'user_subject': subject,
-        }
-      })
-      );
+    final response = await http.post(url,
+        headers: {
+          'origin': 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'service_id': serviceId,
+          'template_id': templateId,
+          'user_id': userId,
+          'template_params': {
+            'user_name': name,
+            'user_email': email,
+            'user_message': message,
+            'user_subject': subject,
+          }
+        }));
   }
 
   final titleController = TextEditingController();
@@ -57,47 +55,48 @@ class _PqrsState extends State<Pqrs> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
-          title: Text("Peticiones, quejas, reclamos")
-        ),
+            backgroundColor: Colors.indigo,
+            foregroundColor: Colors.white,
+            title: Text("Peticiones, quejas, reclamos")),
         body: Center(
-          child: SizedBox(
-            width: width * 0.8,
-            height: height *0.7,
-            child: Column(
+            child: SizedBox(
+          width: width * 0.8,
+          height: height * 0.7,
+          child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Titulo de la solicitud"),
-              TextFormField(
-                controller: titleController,
+              children: [
+                Text("Titulo de la solicitud"),
+                TextFormField(
+                  controller: titleController,
                   decoration: InputDecoration(
-                  hintText: "Nombre",
-                  labelText: "Nombre *",
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.indigo)
-                  )
-                  ),
-              ),
-              Text("Especifica tu caso"),
-              TextField(
-                controller: messageController,
-                maxLines: 15,
-                keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
-                  hintText: "Enter your text here",
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.indigo)
-                  )
+                      hintText: "Nombre",
+                      labelText: "Nombre *",
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.indigo))),
                 ),
-              ),
-              ElevatedButton(onPressed: (){
-                sendEmail(name: name!, email: Authentication.correo, subject: titleController.text, message: messageController.text);
-              }, child: Text("Enviar PQR"))
-            ]
-          ),
-          )
-        )
-    );
+                Text("Especifica tu caso"),
+                TextField(
+                  controller: messageController,
+                  maxLines: 15,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                      hintText: "Escriba su solicitud aquí",
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.indigo))),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      sendEmail(
+                          name: name!,
+                          email: Authentication.correo,
+                          subject: titleController.text,
+                          message: messageController.text);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Solicitud generada con éxito, recibirá respuesta por el correo registrado"),
+                      ));
+                    },
+                    child: Text("Enviar PQR"))
+              ]),
+        )));
   }
 }

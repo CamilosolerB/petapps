@@ -20,6 +20,7 @@ class ProfilePet extends StatefulWidget {
 }
 
 class _ProfilePetState extends State<ProfilePet> {
+  bool isPicture = false;
   List data = [];
   int _valueDepartamento = 1;
   String _valueMunicipio = "";
@@ -47,6 +48,7 @@ class _ProfilePetState extends State<ProfilePet> {
   String cityController = "";
   String urlController = "";
   String tipoEdadController = "";
+  String tipoMascotaController = "";
   String state = "";
   Future<void> stateFuture() async {
     state = await Petition().isState(widget.pet.id);
@@ -67,6 +69,7 @@ class _ProfilePetState extends State<ProfilePet> {
     departamentController = widget.pet.departament;
     cityController = widget.pet.city;
     urlController = widget.pet.url;
+    tipoMascotaController = widget.pet.tipoMascota;
     stateFuture();
     print(state);
     getData();
@@ -108,8 +111,10 @@ class _ProfilePetState extends State<ProfilePet> {
     final motivo = motivoController.text;
     final salud = saludController.text;
     final id = idController.text;
+    final tipoMascota = tipoMascotaController;
     final pet = Pets(
         nombre: name,
+        tipoMascota: tipoMascota,
         edad: age,
         tipoEdad: tipoEdad,
         raza: raza,
@@ -128,7 +133,8 @@ class _ProfilePetState extends State<ProfilePet> {
     });
   }
 
-  Future<void> getFile() async {
+  Future<bool> getFile() async {
+    bool isPicture = false;
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false,
@@ -140,7 +146,9 @@ class _ProfilePetState extends State<ProfilePet> {
       Petition().loadPhoto(file, fileName);
       urlController =
           'https://firebasestorage.googleapis.com/v0/b/adoppet-98cf3.appspot.com/o/uploads%2F$fileName?alt=media';
+      isPicture = true;
     }
+    return isPicture;
   }
 
   void _launchWhatsApp() async {
@@ -158,21 +166,6 @@ class _ProfilePetState extends State<ProfilePet> {
     }
   }
 
-  void _launchPhoneDialer() async {
-    final phoneNumber = widget.pet.phone.toString();
-    final phoneUrl = "tel:$phoneNumber";
-
-    if (await canLaunch(phoneUrl)) {
-      await launch(phoneUrl);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Could not launch the phone dialer."),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,9 +175,9 @@ class _ProfilePetState extends State<ProfilePet> {
           backgroundColor: Colors.indigo,
           actions: [
              IconButton(
-              onPressed: () {
+              onPressed: () async {
                 try {
-                  getFile();
+                    isPicture = await getFile();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
@@ -244,7 +237,7 @@ class _ProfilePetState extends State<ProfilePet> {
                                 controller: edadController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'Por favor, ingrese un nombre.';
+                                    return 'Por favor, ingrese edad';
                                   }
                                   return null;
                                 },
@@ -278,11 +271,27 @@ class _ProfilePetState extends State<ProfilePet> {
                           ],
                         ),
                         Container(
+                  child: DropdownButton<String>(
+                    items: <String>["Perro","Gato","Ave","Pez","Roedor"]
+                    .map((String valor) {
+                      return DropdownMenuItem<String>(
+                        value: valor,
+                        child: Text(valor)
+                        );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        tipoMascotaController = value!;
+                      });
+                    },
+                    ),
+                ),
+                        Container(
                           child: TextFormField(
                             controller: razaController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Por favor, ingrese un nombre.';
+                                return 'Por favor, ingrese la raza';
                               }
                               return null;
                             },
@@ -300,7 +309,7 @@ class _ProfilePetState extends State<ProfilePet> {
                             controller: addressController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Por favor, ingrese un nombre.';
+                                return 'Por favor, ingrese dirección';
                               }
                               return null;
                             },
@@ -412,6 +421,7 @@ class _ProfilePetState extends State<ProfilePet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Nombre: ${widget.pet.nombre}'),
+                        Text('Tipo mascota: ${widget.pet.tipoMascota}'),
                         Text('Edad: ${widget.pet.edad} ${widget.pet.tipoEdad}'),
                         Text('Raza: ${widget.pet.raza}'),
                         Text('Dirección: ${widget.pet.address}'),
@@ -509,13 +519,6 @@ class _ProfilePetState extends State<ProfilePet> {
                                 },
                                 child: Text('Contact via WhatsApp'),
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _launchPhoneDialer();
-                                  Petition().beginAdopt(idController.text);
-                                },
-                                child: Text('Contact via Phone'),
-                              )
                             ],
                           ),
                           if (state.isNotEmpty)

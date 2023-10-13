@@ -19,7 +19,6 @@ class Authentication{
         'total_registro':_counter
       }
     );
-    print("Evento registrado");
   }
   //fin analiticas
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -29,6 +28,7 @@ class Authentication{
   final AnalyticsServices _analyticsServices = AnalyticsServices();
   Future<void>singOut() async{
     await _firebaseAuth.signOut();
+    correo = "";
   }
   //verifica correo
   Future<void> checkEmailAndPassword({
@@ -79,8 +79,9 @@ class Authentication{
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Homepage()));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bienvenido a PetApp")));
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const NewUser()));
+          final currentContext = context;
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Por favor registre los siguientes datos para continuar")));
+          Navigator.push(currentContext, MaterialPageRoute(builder: (currentContext) =>  NewUser()));
         }
       }
       // ignore: use_build_context_synchronously

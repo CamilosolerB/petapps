@@ -39,18 +39,23 @@ class _SliverPetsState extends State<SliverPets> {
                                 margin: EdgeInsets.all(5),
                                 alignment: Alignment.center,
                                 height: height * 0.2,
-                                width: width * 0.8,
+                                width: width * 0.9,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
-                                    SizedBox(
-                                      height: height * 0.2,
-                                      width: width * 0.28,
+                                    Container(
+                                      height: height * 0.15,
+                                      width: width * 0.35,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(50))
+                                      ),
                                       child: Image(
                                         image: NetworkImage(imageUrl),
+                                        fit: BoxFit.cover,   
                                       ),
                                     ),
                                     Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Text(widget.pets[index].nombre, style: decoration(24),),
@@ -75,7 +80,8 @@ class _SliverPetsState extends State<SliverPets> {
                                   String motivo = widget.pets[index].motivo;
                                   String salud = widget.pets[index].salud;
                                   String id = widget.pets[index].id;
-                                  Pets pet = Pets(nombre: nombre, edad: edad,tipoEdad: tipoEdad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id);
+                                  String tipoMascota = widget.pets[index].tipoMascota;
+                                  Pets pet = Pets(nombre: nombre, edad: edad,tipoEdad: tipoEdad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id, tipoMascota: tipoMascota);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(builder: (context) => ProfilePet(pet: pet,))
                                   );

@@ -86,9 +86,10 @@ class Petition{
           String email = document['email'];
           String motivo = document['motivo'];
           String salud   = document['salud'];
+          String tipoMascota = document['tipoMascota'];
           DocumentSnapshot snapshot = pets.docs[count];
           String id = snapshot.id;
-          Pets pet = Pets(nombre: nombre,tipoEdad: tipoEdad, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id);
+          Pets pet = Pets(nombre: nombre,tipoEdad: tipoEdad, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id, tipoMascota: tipoMascota);
           petsList.add(pet);
           count++;
       }
@@ -117,9 +118,10 @@ class Petition{
           String email = document['email'];
           String motivo = document['motivo'];
           String salud = document['salud'];
+          String tipoMascota = document['tipoMascota'];
           DocumentSnapshot snapshot = pets.docs[count];
           String id = snapshot.id;
-          Pets pet = Pets(nombre: nombre,tipoEdad: tipoEdad, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id);
+          Pets pet = Pets(nombre: nombre,tipoEdad: tipoEdad, edad: edad, raza: raza, address: address, phone: phone, departament: departament, city: city, url: url, email: email,motivo: motivo,salud: salud, id: id, tipoMascota: tipoMascota);
           petsList.add(pet);
           count++;
       }
@@ -152,7 +154,8 @@ class Petition{
       'email' : pet.email,
       'tipoEdad': pet.tipoEdad,
       'motivo' : pet.motivo,
-      'salud' : pet.salud
+      'salud' : pet.salud,
+      'tipoMascota': pet.tipoMascota
     })
     .then((value) => print("exitoso"))
     .catchError((error)=> print("Error: " + error));
@@ -181,7 +184,8 @@ class Petition{
       'email' : pet.email,
       'tipoEdad': pet.tipoEdad,
       'motivo' : pet.motivo,
-      'salud' : pet.salud
+      'salud' : pet.salud,
+      'tipoMascota': pet.tipoMascota
     };
     try{
       await firestore.collection(collection).doc(id).update(updateData);

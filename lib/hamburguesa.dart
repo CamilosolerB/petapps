@@ -61,7 +61,7 @@ class _HamburguerState extends State<Hamburguer> {
           )),
         ),
         ListTile(
-          title: const Text('Inicio'),
+          title: const Text('Mascotas en adopción'),
           selected: _selectedIndex == 0,
           onTap: () {
             AnalyticsServices.isDisapear = false;

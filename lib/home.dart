@@ -1,5 +1,4 @@
 import 'package:adopt_me/autentication.dart';
-import 'package:adopt_me/config.dart';
 import 'package:adopt_me/hamburguesa.dart';
 import 'package:adopt_me/search.dart';
 import 'package:adopt_me/services.dart';
@@ -51,7 +50,6 @@ class _HomepageState extends State<Homepage> {
       body: <Widget>[
         Search(),
         Services(),
-        Options()
       ][ currentPageIndex]
     );
   }
@@ -67,13 +65,6 @@ class _HomepageState extends State<Homepage> {
           fontFamily: 'Lora',
           fontSize: 25
         ),
-      actions: <Widget>[
-        IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              startSearch(true);
-            }),
-      ],
     );
   }
   PreferredSizeWidget? getAppBarSearching() {
@@ -81,28 +72,6 @@ class _HomepageState extends State<Homepage> {
       iconTheme: IconThemeData(color: Colors.white),
       automaticallyImplyLeading: false,
       backgroundColor: Colors.indigo,
-      leading: IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            startSearch(false);
-          }),
-      title: Padding(
-        padding: const EdgeInsets.only(bottom: 10, right: 10),
-        child: TextField(
-          controller: searchController,
-          onEditingComplete: () {},
-          style: new TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          autofocus: true,
-          decoration: InputDecoration(
-            focusColor: Colors.white,
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white)),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white)),
-          ),
-        ),
-      ),
     );
   }
 }

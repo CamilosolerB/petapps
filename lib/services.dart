@@ -47,7 +47,7 @@ class _ServicesState extends State<Services> {
             height: height *0.4,
             child: Column(
               children: [
-                Text("En Proceso de Adopcion",
+                Text("En Proceso de Adopción",
                 style: TextStyle(
                   fontSize: 20,
                   fontFamily: 'Sans-serif',
@@ -65,7 +65,7 @@ class _ServicesState extends State<Services> {
                     primary: Colors.blueAccent,
                     onPrimary: Colors.white
                   ),
-                  child: Text("Dar en Adopcion"),
+                  child: Text("Dar en Adopción"),
                 ),
                 listaMascotas.isEmpty
                 ? Text('No hay datos disponibles.')
@@ -84,7 +84,7 @@ class _ServicesState extends State<Services> {
           Container(
             child: Column(
               children: [
-                Text("En busqueda de mis mascotas",
+                Text("En búsqueda de mis mascotas",
                 style: TextStyle(
                   fontSize: 20,
                   fontFamily: 'Sans-serif',
